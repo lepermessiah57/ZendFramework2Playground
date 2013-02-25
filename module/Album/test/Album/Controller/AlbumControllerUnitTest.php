@@ -5,7 +5,7 @@ namespace Album\Controller;
 use \Phake;
 use Album\Form\AlbumForm;
 use Zend\Stdlib\Parameters;
-
+use Zend\Http\Request;
 class AlbumControllerUnitTest extends \PHPUnit_Framework_TestCase {
 
 	private $controller;
@@ -37,8 +37,8 @@ class AlbumControllerUnitTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testAddActionGetRequest(){
-		$request = Phake::mock('Zend\Http\Request');
-		Phake::when($this->sm)->get('request')->thenReturn($request);
+		$request = new \Zend\Http\Request();
+		$this->setRequest($request);
 
 		$actual = $this->controller->addAction();
 
@@ -50,17 +50,14 @@ class AlbumControllerUnitTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testAddActionPostRequestInvalidForm(){
-		$request = Phake::mock('Zend\Http\Request');
-		Phake::when($this->sm)->get('request')->thenReturn($request);
-		Phake::when($request)->isPost()->thenReturn(true);
+		$request = new \Zend\Http\Request();
+		$request->setMethod('POST');
+
+		$this->setRequest($request);
 
 		$actual = $this->controller->addAction();
 
-		$form = new AlbumForm();
-		$form->get('submit')->setValue('Add');
-		$expected = array('form'=>$form);
-
-		$this->assertEquals($expected, $actual);
+		$this->assertEquals(2, count($actual['form']->getMessages()));
 	}
 
 	public function testAddActionPostRequestValidFormCreatesANewAlbum(){
@@ -69,10 +66,13 @@ class AlbumControllerUnitTest extends \PHPUnit_Framework_TestCase {
 		$parameters = new Parameters();
 		$parameters->set('artist', 'Lamb of God');
 		$parameters->set('title', 'Black Label');
+		$parameters->set('id', '1');
 		$request->setPost($parameters);
 
-		Phake::when($this->sm)->get('request')->thenReturn($request);
+		$pm = Phake::mock('Zend\Mvc\Controller\PluginManager');
+		$this->controller->setPluginManager($pm);
 
+		$this->setRequest($request);		
 		$actual = $this->controller->addAction();
 
 		$form = new AlbumForm();
@@ -82,4 +82,9 @@ class AlbumControllerUnitTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals($expected, $actual);
 	}
 
+	private function setRequest($request){
+		$prop = new \ReflectionProperty($this->controller, 'request');
+        $prop->setAccessible(true);
+        $prop->setValue($this->controller, $request);
+	}
 }

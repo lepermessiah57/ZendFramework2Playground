@@ -30,10 +30,10 @@ class AlbumController extends AbstractActionController {
             if ($form->isValid()) {
                 $album->exchangeArray($form->getData());
                 $this->getAlbumTable()->saveAlbum($album);
-
                 // Redirect to list of albums
                 return $this->redirect()->toRoute('album');
             }
+
         }
         return array('form' => $form);
     }
