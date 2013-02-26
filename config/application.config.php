@@ -4,7 +4,8 @@ return array(
     'modules' => array(
         'Application',
         'Album',
-        'ZfcTwig'
+        // 'ZfcTwig',
+        'Rest'
     ),
 
     // These are various options for the listeners attached to the ModuleManager
