@@ -4,7 +4,7 @@ return array(
     'modules' => array(
         'Application',
         'Album',
-        // 'ZfcTwig',
+        'ZfcTwig',
         'Rest'
     ),
 

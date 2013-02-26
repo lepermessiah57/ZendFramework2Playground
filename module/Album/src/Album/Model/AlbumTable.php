@@ -39,6 +39,7 @@ class AlbumTable
         $id = (int)$album->id;
         if ($id == 0) {
             $this->tableGateway->insert($data);
+            $id = $this->tableGateway->getLastInsertValue();
         } else {
             if ($this->getAlbum($id)) {
                 $this->tableGateway->update($data, array('id' => $id));
@@ -46,6 +47,7 @@ class AlbumTable
                 throw new \Exception('Form id does not exist');
             }
         }
+        return $id;
     }
 
     public function deleteAlbum($id)
